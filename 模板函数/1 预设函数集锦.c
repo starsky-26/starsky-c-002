@@ -115,12 +115,12 @@ long long super_pow_mod(long long base, long long power, long long mod)
 	{
 		if (power & 1)         							
 			result = result * base % mod;   
-			//根据公式每个项都取余数后在再做累乘
+			// 根据公式每个项都取余数后在再做累乘
 		base = base * base % mod ;   
-			//根据公式每个项都取余数后在再做平方操作      						
+			// 根据公式每个项都取余数后在再做平方操作      						
 		power >>= 1;         						
 	}
-			//根据公式在最后的的结果上再来一次取余数
+			// 根据公式在最后的的结果上再来一次取余数
 	return result % mod;       
 }
 
