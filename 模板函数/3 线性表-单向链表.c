@@ -42,7 +42,8 @@ void link_set_error_output(int enable);
 node* link_search(intlink *list, int x);
 intlink* link_intlist(int n, int sign);
 node* link_getplace(intlink *list, int t);
-node* link_addnode_pr(intlink *list, node *t);
+node* link_addnode_pr_1(intlink *list, node *t);
+node* link_addnode_pr_2(intlink *list, node *t);
 node* link_addnode_head(intlink *list);
 node* link_addnode_tail(intlink *list);
 node* link_addnode(intlink *list, int k);
@@ -105,8 +106,11 @@ int link_printlist(intlink *list) {
 	}
 	node *t=list->head;
 	int count=0;
-	if(t==NULL) return -1;
 	printf("Here are contents of the linklist now:\n");
+	if(t==NULL) {
+		printf("The linklist is empty.\n");
+		return -1;
+	}
 	while(t!=NULL) {
 		printf("%d:%d\n", ++count, t->num);// 具体根据节点实际状态填写
 		t=t->link;
@@ -195,10 +199,10 @@ node* link_addnode_pr_1(intlink *list, node *t) {
 		q->link = t;
 		for(node *i=list->head; i!=NULL; i=i->link) {
 			if(i->link==t) {// i为t节点前一节点地址
+				i->link=q;
 				break;
 			}
 		}
-		i->link=q;
 	}
 	return q;
 }
