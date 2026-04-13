@@ -237,7 +237,7 @@ node* dlink_addnode(intdlink *list, int target, intplace x, int sign) {// target
 		return NULL;
 	}
 	if(target!=-1 && target!=1) {
-		if (dlink_error_output) printf("The \"target\" used to determine direction should be 0 or 1.\n");
+		if (dlink_error_output) printf("The \"target\" used to determine direction should be -1 or 1.\n");
 		return NULL;
 	}
 	if(!dlink_checkplace(list, x, sign)) {
@@ -290,13 +290,12 @@ int dlink_deletenode(intdlink *list, int target, intplace x, int sign) {// targe
 		if (dlink_error_output) printf("The \"target\" used to determine direction should be -1 , 0 or 1.\n");
 		return 0;
 	}
-	if(!dlink_checkplace(list, x, sign)) {
+	if(!dlink_checkplace(list, x, sign)) {// 判断位置是否合法
 		return 0;
 	}
 	if(sign) {// 统一翻译成x.pr
 		x.pr = dlink_getplace_n(list, x.n);
 	}
-	list->size--;
 	switch(target) {
 		case 0:// 删除当前节点
 			if(x.pr==list->head) {
@@ -315,20 +314,63 @@ int dlink_deletenode(intdlink *list, int target, intplace x, int sign) {// targe
 				x.pr->link2->link1 = x.pr->link1;
 				free(x.pr);
 			}
+			list->size--;
 			break;
 		case -1:// 删除前一节点
 			if(x.pr==list->head) {
 				if (dlink_error_output) printf("Invalid position.(the position isn't in the list)\n");
-				return NULL;
+				return 0;
 			}
-			// ！！！该处理正常情况了
+			if(x.pr->link1==list->head) {// 删除头结点
+				list->head = x.pr;
+				free(x.pr->link1);
+				x.pr->link1 = NULL;
+			} else {
+				node *t = x.pr->link1;
+				x.pr->link1 = t->link1;
+				t->link1->link2 = x.pr;
+				free(t);
+			}
+			list->size--;
 			break;
 		case 1:// 删除后一节点
-			
+			if(x.pr==list->tail) {
+				if (dlink_error_output) printf("Invalid position.(the position isn't in the list)\n");
+				return 0;
+			}
+			if(x.pr->link2==list->tail) {// 删除尾结点
+				list->tail = x.pr;
+				free(x.pr->link2);
+				x.pr->link2 = NULL;
+			} else {
+				node *t = x.pr->link2;
+				x.pr->link2 = t->link2;
+				t->link2->link1 = x.pr;
+				free(t);
+			}
+			list->size--;
 			break;
 	}
 	return 1;
 }
+
+// 删除全部节点，删除链表信息
+int dlink_deletelist(intdlink *list) {
+	if(list==NULL) {
+		if (dlink_error_output) printf("Can't find the target dlinklist.\n");
+		return 0;
+	}
+	for(node *t=list->head, *p; t!=NULL;) {
+		p = t->link2;
+		free(t);
+		t = p;
+	}
+	free(list);
+	return 1;
+}
+
+
+
 
 
 
