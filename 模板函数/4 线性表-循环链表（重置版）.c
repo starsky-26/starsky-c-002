@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>// qsort
@@ -29,7 +29,7 @@
 // 将t1节点的所有数据复制给t1节点
 
 #define PLACE0(p) ((intplace){.pr = (p)})
-#define PLACE1(n) ((intplace){.n = (n)})
+#define PLACE1(idx) ((intplace){.n = (idx)})
 // 自动填写复合字面量
 
 /*
@@ -144,14 +144,17 @@ intdclink* dclink_intlist(int n, int sign) {// sign=1录入数据，sign=0不录
 		}
 		if(list->head==NULL) {// 首个节点
 			list->head=q;
-			q->link1=NULL;
+			list->tail=q;
+			q->link1=q;
+			q->link2=q;
 		}
 		else {
 			q->link1 = list->tail;
+			q->link2 = list->head;
 			list->tail->link2 = q;// 设置第i-1节点的link2
+			list->head->link1 = q;
+			list->tail = q;// tail移动到当前（第i）节点
 		}
-		list->tail = q;// tail移动到当前（第i）节点
-		list->tail->link2=NULL;// 始终保持新结点link2为0
 	}
 	list->size = n;
 	return list;
@@ -169,16 +172,18 @@ node* dclink_addnode_head(intdclink *list) {
 		return NULL;
 	}
 	dclink_basic_fillnode_0(q);
-	q->link1 = NULL;
 	list->size++;
 	
 	if(list->tail==NULL) {//如果是空链表
 		list->head = q;
 		list->tail = q;
-		q->link2 = NULL;
+		q->link1 = q;
+		q->link2 = q;
 	} else {
+		q->link1 = list->tail;
 		q->link2 = list->head;
 		list->head->link1 = q;
+		list->tail->link2 = q;
 		list->head = q;
 	}
 	return q;
@@ -196,16 +201,18 @@ node* dclink_addnode_tail(intdclink *list) {
 		return NULL;
 	}
 	dclink_basic_fillnode_0(q);
-	q->link2 = NULL;
 	list->size++;
 	
 	if(list->tail==NULL) {//如果是空链表
 		list->head = q;
 		list->tail = q;
-		q->link1 = NULL;
+		q->link1 = q;
+		q->link2 = q;
 	} else {
 		q->link1 = list->tail;
+		q->link2 = list->head;
 		list->tail->link2 = q;
+		list->head->link1 = q;
 		list->tail = q;
 	}
 	return q;
@@ -289,12 +296,14 @@ int dclink_deletenode(intdclink *list, int target, intplace x, int sign) {// tar
 			if(x.pr==list->head) {// 删除头结点
 				node *t = list->head;
 				list->head = list->head->link2;
-				list->head->link1 = NULL;
+				list->head->link1 = list->tail;
+				list->tail->link2 = list->head;
 				free(t);
 			} else if(x.pr==list->tail) {// 删除尾结点
 				node *t = list->tail;
 				list->tail = list->tail->link1;
-				list->tail->link2 = NULL;
+				list->tail->link2 = list->head;
+				list->head->link1 = list->tail;
 				free(t);
 			}
 			else {
@@ -305,39 +314,9 @@ int dclink_deletenode(intdclink *list, int target, intplace x, int sign) {// tar
 			list->size--;
 			break;
 		case -1:// 删除前一节点
-			if(x.pr==list->head) {
-				if (dclink_error_output) printf("Cannot delete the preceding node.(already at boundary)\n");
-				return -1;
-			}
-			if(x.pr->link1==list->head) {// 删除头结点
-				list->head = x.pr;
-				free(x.pr->link1);
-				x.pr->link1 = NULL;
-			} else {
-				node *t = x.pr->link1;
-				x.pr->link1 = t->link1;
-				t->link1->link2 = x.pr;
-				free(t);
-			}
-			list->size--;
-			break;
+			return dclink_deletenode(list, 0, PLACE0(x.pr->link1), 0);
 		case 1:// 删除后一节点
-			if(x.pr==list->tail) {
-				if (dclink_error_output) printf("Cannot delete the following node.(already at boundary)\n");
-				return -1;
-			}
-			if(x.pr->link2==list->tail) {// 删除尾结点
-				list->tail = x.pr;
-				free(x.pr->link2);
-				x.pr->link2 = NULL;
-			} else {
-				node *t = x.pr->link2;
-				x.pr->link2 = t->link2;
-				t->link2->link1 = x.pr;
-				free(t);
-			}
-			list->size--;
-			break;
+			return dclink_deletenode(list, 0, PLACE0(x.pr->link2), 0);
 	}
 	return 1;
 }
@@ -349,7 +328,8 @@ int dclink_deletelist(intdclink *list) {
 		if (dclink_error_output) printf("Can't find the target dlinklist.\n");
 		return -1;
 	}
-	for(node *t=list->head, *p; t!=NULL;) {
+	node *t=list->head, *p;
+	for(int i=0; i<list->size; i++) {
 		p = t->link2;
 		free(t);
 		t = p;
@@ -384,6 +364,8 @@ intdclink* dclink_append(intdclink* list1, intdclink* list2) {
 	}
 	list1->tail->link2 = list2->head;
 	list2->head->link1 = list1->tail;
+	list2->tail->link2 = list1->head;
+	list1->head->link1 = list2->tail;
 	list1->tail = list2->tail;
 	list1->size += list2->size;
 	free(list2);
@@ -400,7 +382,8 @@ intdclink* dclink_copy(intdclink* list1) {
 	if(list1->size==0) {
 		return list2;
 	}
-	for(node *t1=list1->head, *t2=list2->head; t1!=NULL; t1=t1->link2, t2=t2->link2) {
+	node *t1=list1->head, *t2=list2->head;
+	for(int i=0; i<list1->size; i++, t1=t1->link2, t2=t2->link2) {
 		DIY_copy
 	}
 	return list2;
@@ -464,7 +447,8 @@ node* dclink_search(intdclink* list, int x) {
 	if(list->size==0) {
 		return NULL;
 	}
-	for(node *t=list->head; t!=NULL; t = t->link2) {
+	node *t=list->head;
+	for(int i=0; i < list->size; i++, t = t->link2) {
 		if(DIY_search(t, x)) {// 根据所查找成员&节点结构DIY
 			return t;
 		}
@@ -479,7 +463,7 @@ int dclink_getplace_pr(intdclink *list, node *p) {
 		return -1;
 	}
 	int count=1;
-	for(node *t=list->head; t!=NULL; t=t->link2) {
+	for(node *t=list->head; count<=list->size; t=t->link2) {
 		if(t==p) {
 			return count;
 		}
@@ -545,7 +529,7 @@ int dclink_printlist(intdclink *list) {
 		return -1;
 	}
 	printf("Here are contents of the dlinklist now:\n");
-	while(t!=NULL) {
+	while(count<list->size) {
 		printf("%d: ", ++count);
 		DIY_printnode(t);// 具体根据节点实际状态填写DIY宏
 		t = t->link2;
