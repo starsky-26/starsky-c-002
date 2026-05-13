@@ -1,14 +1,6 @@
 /*
 手动DIY目录：
-DIY_node				
-DIY_fillnode_0(k)		
-DIY_fillnode(k)			
-DIY_printnode(k)		（若需调用dlink_printlist时）
-DIY_search(k, x)		（若需调用dlink_search时）
-DIY_copy				（若需调用dlink_copy时）
 
-说明：
-所有涉及intplacecan参数的函数，调用要写PLACE0(x) or PLACE1(x)，代表指针 or 序号
 */
 
 #include <stdio.h>
@@ -16,30 +8,10 @@ DIY_copy				（若需调用dlink_copy时）
 #include <string.h>
 #include <stdlib.h>
 
-#define DIY_data			int num
-// 用于自定义节点的数据结构
 
-#define DIY_fillnode_0(k)	k->num=0
-// 以k作为节点指针；用于填写成员赋值语句
-
-#define DIY_fillnode(k)		scanf("%d", &k->num)
-// 以k作为节点指针；要能直接填写在scanf()的()里
-
-#define DIY_printnode(k)	printf("num=%d\n", k->num)
-// 以k作为节点指针；要能直接填写在printf()的()里
-
-#define DIY_search(k, x)	k->num==x
-// 以k作为节点指针；要能直接填写在if()的()里（注意：仅用于简单的节点数据。对于多数据节点，可能要手动修改dlink_search函数！！！！！！）
-
-#define DIY_copy			t2->num = t1->num
-// 将t1节点的所有数据复制给t2节点
-
-#define PLACE0(p) ((intplace){.pr = (p)})
-#define PLACE1(idx) ((intplace){.n = (idx)})
-// 自动填写复合字面量
 
 /*
-数据结构-线性表-双向链表 函数实现
+数据结构-树-一般树（三重链表实现）s 函数实现
 基本信息类型：intdlink
 节点类型：node
 若同时建立多个顺序表，需建立多个node变量类型 和 多个基本信息变量，并将所有函数的node分别换成对应词（并设定平行的不同函数名称）
