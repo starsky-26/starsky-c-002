@@ -1,5 +1,4 @@
-﻿/*
-手动DIY目录：
+﻿/* 手动DIY目录：
 DIY_node				
 DIY_fillnode_0(k)		
 DIY_fillnode(k)			
@@ -38,8 +37,7 @@ DIY_copy				（若需调用dclink_copy时）
 #define PLACE1(idx) ((intplace){.n = (idx)})
 // 自动填写复合字面量
 
-/*
-数据结构-线性表-双向循环链表 函数实现
+/* 数据结构-线性表-双向循环链表 函数实现
 基本信息类型：intdclink
 节点类型：node
 若同时建立多个顺序表，需建立多个node变量类型 和 多个基本信息变量，并将所有函数的node分别换成对应词（并设定平行的不同函数名称）
@@ -47,7 +45,7 @@ DIY_copy				（若需调用dclink_copy时）
 */
 
 static int dclink_error_output = 1;  // 默认打印错误（自定义函数外的static代表
-// 链表节点结构（除link部分外可自定义）
+// 链表节点结构（具体根据需要填写DIY宏）
 typedef struct Node {
 	DIY_node
 	struct Node *link1;
@@ -56,13 +54,14 @@ typedef struct Node {
 
 // 基本信息结构体
 typedef struct {
-	node *head;// 链表首节点地址
-	node *tail;// 链表尾节点地址（恒为head->link1）
-	int size;// 链表节点个数
+	node *head;	// 链表首节点地址
+	node *tail;	// 链表尾节点地址（恒为head->link1）
+	int size;	// 链表节点个数
 } intdclink, *intdclink_p;
 
-// 位置信息联合体（sign=0取地址，sign=1取序号）
-// 所有涉及intplace的函数，调用要写PLACE0(x) or PLACE1(x)，代表指针 or 序号
+/* 位置信息联合体（sign=0取地址，sign=1取序号）
+   所有涉及intplace的函数，调用要写PLACE0(x) or PLACE1(x)，代表指针 or 序号
+*/
 typedef union {
 	node *pr;
 	int n;
@@ -105,9 +104,9 @@ int main() {
 // 自定义函数
 
 // 1.链表结构控制
-
-// 创建链表
-// 返回值：链表信息结构体指针（失败可视化错误处理并返回NULL）
+/* 创建链表
+   返回值：链表信息结构体指针（失败返回NULL）
+*/
 intdclink* dclink_intlist(int n, int sign_fill) {// sign_fill=1录入数据，sign_fill=0不录入数据
 	if(n<0) {
 		if (dclink_error_output) printf("The number of nodes should >= 0.\n");
@@ -168,7 +167,9 @@ intdclink* dclink_intlist(int n, int sign_fill) {// sign_fill=1录入数据，si
 	return list;
 }
 
-// 向链表头前添加1个空节点
+/* 向链表头前添加1个空节点
+   返回值：新节点地址
+*/
 node* dclink_addnode_head(intdclink *list) {
 	if(list==NULL) {
 		if (dclink_error_output) printf("Can't find the target dclinklist.\n");
@@ -197,7 +198,9 @@ node* dclink_addnode_head(intdclink *list) {
 	return q;
 }
 
-// 向链表尾后添加1个空节点
+/* 向链表尾后添加1个空节点
+   返回值：新节点地址
+*/
 node* dclink_addnode_tail(intdclink *list) {
 	if(list==NULL) {
 		if (dclink_error_output) printf("Can't find the target dclinklist.\n");
@@ -226,7 +229,9 @@ node* dclink_addnode_tail(intdclink *list) {
 	return q;
 }
 
-// 向intplace=x的节点的前or后添加1个空节点
+/* 向intplace=x的节点的前or后添加1个空节点
+   返回值：新节点地址
+*/
 node* dclink_addnode(intdclink *list, int target, intplace x, int sign) {// target：-1=前，1=后
 	if(list==NULL) {
 		if (dclink_error_output) printf("Can't find the target dclinklist.\n");
@@ -275,8 +280,9 @@ node* dclink_addnode(intdclink *list, int target, intplace x, int sign) {// targ
 	return q;
 }
 
-// 删除intplace=x的节点 or 其前/后节点
-// 返回值：1（失败返回-1）
+/* 删除intplace=x的节点 or 其前/后节点
+   返回值：1（失败返回-1）
+*/
 int dclink_deletenode(intdclink *list, int target, intplace x, int sign) {// target：-1=前，0=x，1=后
 	if(list==NULL) {
 		if (dclink_error_output) printf("Can't find the target dclinklist.\n");
@@ -329,8 +335,9 @@ int dclink_deletenode(intdclink *list, int target, intplace x, int sign) {// tar
 	return 1;
 }
 
-// 删除全部节点，删除链表信息
-// 返回值：1（失败返回-1）
+/* 删除全部节点，删除链表信息
+   返回值：1（失败返回-1）
+*/
 int dclink_deletelist(intdclink *list) {
 	if(list==NULL) {
 		if (dclink_error_output) printf("Can't find the target dclinklist.\n");
@@ -353,8 +360,9 @@ int dclink_deletelist(intdclink *list) {
 	return 1;
 }
 
-// 将list2追加到list1后（需保证node类型相同；函数将删除list2，如需要可提前调用dclink_copy(list2)）
-// 返回值：list1的链表信息结构体指针（失败返回NULL）
+/* 将list2追加到list1后（需保证node类型相同；函数将删除list2，如需要可提前调用dclink_copy(list2)）
+   返回值：list1的链表信息结构体指针（失败返回NULL）
+*/
 intdclink* dclink_append(intdclink* list1, intdclink* list2) {
 	if(list1==NULL) {
 		if (dclink_error_output) printf("Can't find the target dclinklist 1 now.\n");
@@ -391,7 +399,9 @@ intdclink* dclink_append(intdclink* list1, intdclink* list2) {
 	return list1;
 }
 
-// 复制list1
+/* 复制list1
+   返回值：复制出来的链表的信息结构体指针（失败返回NULL）
+*/
 intdclink* dclink_copy(intdclink* list1) {
 	if(list1==NULL) {
 		if (dclink_error_output) printf("Can't find the target dclinklist now.\n");
@@ -409,12 +419,14 @@ intdclink* dclink_copy(intdclink* list1) {
 }
 
 
-// 2.节点位置信息获取&转换
 
-// 可视化检查intplace=x的位置信息是否合法
-// 返回值：1（位置非法返回-1）
-// 特别注意：为避免每次调用checkplace都遍历链表，此处不检查地址是否一定在链表中！！！		如有需要，可单独检验dclink_getplace_pr(list, x.pr)!=-1
-// 返回1时确保：链表存在且非空，intplace在链表里（地址除外）
+// 2.节点位置信息获取&转换
+/* 可视化检查intplace=x的位置信息是否合法
+   返回值：1（位置非法返回-1）
+   
+   特别注意：为避免每次调用checkplace都遍历链表，此处不检查地址是否一定在链表中！！！如有需要，可单独检验dclink_getplace_pr(list, x.pr)!=-1）
+   返回1时确保：链表存在且非空，intplace在链表里（地址除外）
+*/
 int dclink_checkplace(intdclink *list, intplace x, int sign) {
 	if(sign!=0 && sign!=1) {
 		if (dclink_error_output) printf("The sign to translate \"intplace\" should be 0 or 1.\n");
@@ -456,9 +468,11 @@ int dclink_checkplace(intdclink *list, intplace x, int sign) {
 	return -1;
 }
 
-// 查找数据（从head开始，查找第一个特定成员值为x的节点）
-// 返回值：找到返回相应节点指针（找不到返回NULL）
-// tips：大多数场景下，需要将该函数放入main中，并用变量形式填写DIY_search(t, x)；本函数仅作为格式模板
+/* 查找数据（从head开始，查找第一个特定成员值为x的节点）
+   返回值：目标节点指针（找不到返回NULL）
+   
+   tips：大多数场景下，需要将该函数放入main中，并用变量形式填写DIY_search(t, x)；本函数仅作为格式模板
+*/
 node* dclink_search(intdclink* list, int x) {
 	if(list==NULL) {
 		if (dclink_error_output) printf("Can't find the target dclinklist now.\n");
@@ -476,8 +490,9 @@ node* dclink_search(intdclink* list, int x) {
 	return NULL;
 }
 
-// 转换：节点地址->节点序号
-// 返回值：节点序号（失败返回-1）
+/* 转换：节点地址->节点序号
+   返回值：节点序号（失败返回-1）
+*/
 int dclink_getplace_pr(intdclink *list, node *p) {
 	if(dclink_checkplace(list, PLACE0(p), 0)==-1) {
 		return -1;
@@ -492,8 +507,9 @@ int dclink_getplace_pr(intdclink *list, node *p) {
 	return -1;
 }
 
-// 转换：节点序号->节点地址
-// 返回值：节点地址（失败返回NULL）
+/* 转换：节点序号->节点地址
+   返回值：节点地址（失败返回NULL）
+*/
 node* dclink_getplace_n(intdclink *list, int n) {
 	if(dclink_checkplace(list, PLACE1(n), 1)==-1) {
 		return NULL;
@@ -507,9 +523,10 @@ node* dclink_getplace_n(intdclink *list, int n) {
 }
 
 
-// 3.节点信息录入&输出
 
-// 向intplace=x的节点写入0
+// 3.节点信息录入&输出
+/* 向intplace=x的节点写入0
+*/
 void dclink_fillnode_0(intdclink *list, intplace x, int sign) {
 	if(dclink_checkplace(list, x, sign)==-1) {// 判断位置是否合法
 		return;
@@ -521,8 +538,9 @@ void dclink_fillnode_0(intdclink *list, intplace x, int sign) {
 	return;
 }
 
-// 向intplace=x的节点录入数据
-// 返回值：本节点成功录入数据个数（读取到文件尾时返回-1）
+/* 向intplace=x的节点录入数据
+   返回值：本节点成功录入数据个数（读取到文件尾时返回-1）
+*/
 int dclink_fillnode(intdclink *list, intplace x, int sign) {
 	if(dclink_checkplace(list, x, sign)==-1) {// 判断位置是否合法
 		return -1;
@@ -533,8 +551,9 @@ int dclink_fillnode(intdclink *list, intplace x, int sign) {
 	return dclink_basic_fillnode(x.pr);
 }
 
-// 打印全部链表数据
-// 返回值：1（空链表等错误返回-1）
+/* 打印全部链表数据
+   返回值：1（空链表等错误返回-1）
+*/
 int dclink_printlist(intdclink *list) {
 	if(list==NULL) {
 		if (dclink_error_output) printf("Can't find the target dclinklist now.\n");
@@ -556,15 +575,17 @@ int dclink_printlist(intdclink *list) {
 }
 
 
-// 4.其他（供其他函数调用的基础功能函数等）
 
-// 控制是否可视化打印错误信息
+// 4.其他（供其他函数调用的基础功能函数等）
+/* 控制是否可视化打印错误信息
+*/
 void dclink_set_error_output(int enable) {// 1→打印；0→不打印
 	dclink_error_output = enable ? 1 : 0;
 	return;
 }
 
-// 向某地址为q的节点写入0
+/* 向某地址为q的节点写入0
+*/
 static void dclink_basic_fillnode_0(node *q) {
 	if(q==NULL) {
 		if (dclink_error_output) printf("Can't find the target node.\n");
@@ -574,8 +595,9 @@ static void dclink_basic_fillnode_0(node *q) {
 	return;
 }
 
-// 向某地址为q的节点录入数据
-// 返回值：本节点成功录入数据个数（读取到文件尾时返回-1）
+/* 向某地址为q的节点录入数据
+   返回值：本节点成功录入数据个数（读取到文件尾时返回-1）
+*/
 static int dclink_basic_fillnode(node *q) {
 	if(q==NULL) {
 		if (dclink_error_output) printf("Can't find the target node.\n");
