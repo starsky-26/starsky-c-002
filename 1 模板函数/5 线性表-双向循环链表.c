@@ -110,6 +110,8 @@ void dclink_set_error_output(int enable);									// 控制是否可视化打印
 static void dclink_basic_fillnode_0(node *q);								// （basic）向某地址为q的节点写入0
 static int dclink_basic_fillnode(node *q);									// （basic）向某地址为q的节点录入数据
 
+
+
 int main() {
 	
     
@@ -117,6 +119,8 @@ int main() {
     
     return 0;
 }
+
+
 
 // 自定义函数
 
@@ -248,8 +252,10 @@ node* dclink_addnode_tail(intdclink *list) {
 
 /* 向intplace=x的节点的前or后添加1个空节点
    返回值：新节点地址
+   
+   target：-1=前，1=后
 */
-node* dclink_addnode(intdclink *list, int target, intplace x, int sign) {// target：-1=前，1=后
+node* dclink_addnode(intdclink *list, int target, intplace x, int sign) {
 	if(list==NULL) {
 		if (dclink_error_output) printf("[Invalid function argument] The target dlinklist pointer is NULL.\n");
 		return NULL;
@@ -299,8 +305,10 @@ node* dclink_addnode(intdclink *list, int target, intplace x, int sign) {// targ
 
 /* 删除intplace=x的节点 or 其前/后节点
    返回值：1（失败返回-1）
+   
+   target：-1=前，0=x，1=后
 */
-int dclink_deletenode(intdclink *list, int target, intplace x, int sign) {// target：-1=前，0=x，1=后
+int dclink_deletenode(intdclink *list, int target, intplace x, int sign) {
 	if(list==NULL) {
 		if (dclink_error_output) printf("[Invalid function argument] The target dlinklist pointer is NULL.\n");
 		return -1;
@@ -494,7 +502,7 @@ int dclink_checkplace(intdclink *list, intplace x, int sign) {
 /* 查找数据（从head开始，查找第一个特定成员值为x的节点）
    返回值：目标节点指针（找不到返回NULL）
    
-   tips：大多数场景下，需要将该函数放入main中，并用变量形式填写DIY_search(t, x)；本函数仅作为格式模板
+   tips：本函数作为格式模板，仅设定一个搜索参量x，实际可手动添加
 */
 node* dclink_search(intdclink* list, int x) {
 	if(list==NULL) {
